@@ -915,8 +915,11 @@ async function loadDataFromBackend() {
       DisasterGuard.get('/api/risk/latest')
     ]);
 
-    if (sosRes.status === 'fulfilled' && Array.isArray(sosRes.value?.sos_requests)) {
-      sos = sosRes.value.sos_requests.map(mapBackendSOS);
+    // Backend GET /api/sos returns { sos: [ ... ] } (see backend/routes/sos.js).
+    // Use the real `sos` field instead of the non-existent `sos_requests` key,
+    // otherwise the Command Centre silently falls back to demo data on initial load.
+    if (sosRes.status === 'fulfilled' && Array.isArray(sosRes.value?.sos)) {
+      sos = sosRes.value.sos.map(mapBackendSOS);
     }
     if (teamsRes.status === 'fulfilled' && Array.isArray(teamsRes.value?.rescue_teams)) {
       teams = teamsRes.value.rescue_teams.map(mapBackendTeam);
